@@ -4,5 +4,5 @@ from fastapi import APIRouter
 router = APIRouter()
 
 @router.get("/order")
-def ping():
+async def ping():
     return {"message": "trade"}
