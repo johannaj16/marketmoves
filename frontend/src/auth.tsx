@@ -28,12 +28,38 @@ export default function AuthPage() {
       password,
     });
 
-    if (error) {
+    if (error || data === null) {
       console.log('Signin error: ', error)
+      return
     }
     else {
       console.log('Successful sign in:', data)
     }
+
+    if (data.session === null)
+    {
+      console.log("Session not returned")
+      alert("idk alert the user of something")
+      return
+    }
+
+    const token = data?.session?.access_token;
+
+    if (token === null)
+    {
+      console.log("missing token")
+      return
+    }
+
+    const res = await fetch('http://127.0.0.1:8000/protected', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const json = await res.json()
+    
+    return json
   }
 
 

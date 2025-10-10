@@ -10,13 +10,6 @@ async def ping():
     return {"message": "user"}
 
 
-@router.post("/")
-def create_user(user: User):
-    session.add(user)
-    session.commit()
-    session.refresh(user)
-    return user
-
 @router.get("/allUsers")
 def get_all_users():
     try: 

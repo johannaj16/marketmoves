@@ -17,12 +17,3 @@ app.include_router(auth_routes.router, prefix="/auth")
 app.include_router(trade_routes.router, prefix="/trade")
 app.include_router(market_routes.router, prefix="/market")
 app.include_router(user_routes.router, prefix="/user")
-
-@app.get("/protected")
-async def authenticated(credentials: HTTPBearer = Depends(security)):
-    token = credentials.credentials
-    decoded = auth_routes.verify_token(token)
-    if not decoded:
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
-
-    
