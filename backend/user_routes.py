@@ -3,10 +3,10 @@ from models import User
 from sqlmodel import Session, select
 from db import get_session
 
-# auth_routes.py → login/signup/logout endpoints
+
 router = APIRouter()
 
-@router.get("/")
+@router.get("/ping")
 async def ping():
     return {"message": "user"}
 
@@ -18,7 +18,7 @@ def create_user(user: User, session: Session = Depends(get_session)):
     session.refresh(user)
     return user
 
-@router.get("/")
+@router.get("/allUsers")
 def get_all_users(session: Session = Depends(get_session)):
     try: 
         statement = select(User)
