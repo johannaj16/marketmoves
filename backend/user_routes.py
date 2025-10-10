@@ -1,4 +1,4 @@
-from fastapi import APIRouter,FastAPI, Depends
+from fastapi import APIRouter,FastAPI, Depends, HTTPException
 from models import User
 from sqlmodel import Session, select
 from db import get_session
@@ -20,12 +20,26 @@ def create_user(user: User, session: Session = Depends(get_session)):
 
 @router.get("/")
 def get_all_users(session: Session = Depends(get_session)):
-    statement = select(User)
-    return session.exec(statement).all()   # query using ORM model
+    try: 
+        statement = select(User)
+        allQueries = session.exec(statement).all()
+    except Exception as e: 
+        raise HTTPException(status_code=500, detail=f"Database session connection issue: {e}\n")
+    return allQueries   # query using ORM model
 
 @router.get("/{id}")
 def get_user(id: int, session: Session = Depends(get_session)):
-    statement = select(User).where(User.id==id)  # query using ORM model 
 
-    ## ALERT HANDLE WHEN THE STATEMENT RETURNS NULL SO IT DOESN'T CONFUSE THE FRONT END 
-    return session.exec(statement).first()
+    if not session:
+        raise HTTPException(status_code=500, detail='Database session connection issue\n')
+    
+    
+    try: 
+        statement = select(User).where(User.id==id)  # query using ORM model 
+        user = session.exec(statement).first()
+    except Exception as e: 
+        raise HTTPException(status_code=500, detail=f"Database session connection issue: {e}\n")
+    if not user:
+        raise HTTPException(status_code=404, detail='User cannot be found\n')
+        
+    return user
