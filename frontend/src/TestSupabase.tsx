@@ -7,7 +7,7 @@ export default function TestSupabase() {
       const { data, error } = await supabase.auth.getSession();
       console.log("getSession error:", error);
       console.log("session:", data?.session ?? null);
-    })();
+    })
   }, []);
 
   return (

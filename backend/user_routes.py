@@ -1,7 +1,6 @@
 from fastapi import APIRouter,FastAPI, Depends, HTTPException
 from models import User
-from sqlmodel import Session, select
-from db import get_session
+from db import supabase
 
 
 router = APIRouter()
@@ -12,34 +11,30 @@ async def ping():
 
 
 @router.post("/")
-def create_user(user: User, session: Session = Depends(get_session)):
+def create_user(user: User):
     session.add(user)
     session.commit()
     session.refresh(user)
     return user
 
 @router.get("/allUsers")
-def get_all_users(session: Session = Depends(get_session)):
+def get_all_users():
     try: 
-        statement = select(User)
-        allQueries = session.exec(statement).all()
+        response = supabase.table("User").select("*").execute()
+        users = response.data
     except Exception as e: 
         raise HTTPException(status_code=500, detail=f"Database session connection issue: {e}\n")
-    return allQueries   # query using ORM model
+    return users   # query using ORM model
+
 
 @router.get("/{id}")
-def get_user(id: int, session: Session = Depends(get_session)):
-
-    if not session:
-        raise HTTPException(status_code=500, detail='Database session connection issue\n')
-    
-    
+def get_user(id: int):    
     try: 
-        statement = select(User).where(User.id==id)  # query using ORM model 
-        user = session.exec(statement).first()
+        response = supabase.table("User").select("*").eq("id", id).execute()
+        user = response.data
     except Exception as e: 
         raise HTTPException(status_code=500, detail=f"Database session connection issue: {e}\n")
     if not user:
         raise HTTPException(status_code=404, detail='User cannot be found\n')
         
-    return user
+    return user[0]
