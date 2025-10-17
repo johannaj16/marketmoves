@@ -1,17 +1,34 @@
-from pydantic import BaseModel, PositiveInt
+from pydantic import BaseModel, PositiveInt, Field
 from supabase_auth import Optional
 
 
 class User(BaseModel):
-    id: Optional[int] # primary_key needs to be unique and will increment automatically 
+    user_id: Optional[int] = None   # primary_key needs to be unique and will increment automatically 
     email: str
-    firstName: str
-    lastName: str
-    balance: float = 10000.0  # default value 
+    first_name: str
+    last_name: str
+    balance: float = 10000.0        # default value 
 
 class Order(BaseModel):
-    id: Optional[int]
-    user_ID: int
+    order_id: Optional[int] = None  # auto increment
+    user_id: int
     stock: str
     quantity: PositiveInt 
-    transaction: str            # buy or sell
+    price: int                  # at the time of transaction
+    order_type: str            # buy or sell
+
+class Watchlist(BaseModel):
+    user_id: int = Field(primary_key=True)
+    name: str = Field(primary_key=True)
+
+    
+class Symbol(BaseModel):
+    ticker: str = Field(primary_key=True)      # ex: AAPL
+    name: str           # ex: Apple Inc.
+    exchange: str       # ex: NASDAQ
+
+class WatchlistSymbol(BaseModel):
+    user_id: int = Field(primary_key=True)
+    name: str = Field(primary_key=True)
+    ticker: str         # ex: AAPL 
+
