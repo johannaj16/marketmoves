@@ -9,17 +9,16 @@ class User(BaseModel):
     last_name: str
     balance: float = 10000.0        # default value 
 
-class Order(BaseModel):
+class Market_Order(BaseModel):
     order_id: Optional[int] = None  # auto increment
     user_id: int
     stock: str
     quantity: PositiveInt 
     price: int                  # at the time of transaction
     order_type: str            # buy or sell
-
 class Watchlist(BaseModel):
     user_id: int = Field(primary_key=True)
-    name: str = Field(primary_key=True)
+    watchlist_name: str = Field(primary_key=True)
 
     
 class Symbol(BaseModel):
@@ -29,6 +28,6 @@ class Symbol(BaseModel):
 
 class WatchlistSymbol(BaseModel):
     user_id: int = Field(primary_key=True)
-    name: str = Field(primary_key=True)
-    ticker: str         # ex: AAPL 
+    watchlist_name: str = Field(primary_key=True)
+    ticker: str    # ex: AAPL 
 

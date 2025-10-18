@@ -17,7 +17,7 @@ def get_all_users():
         users = User(**response.data)
     except Exception as e: 
         raise HTTPException(status_code=500, detail=f"Database session connection issue: {e}\n")
-    return users   # query using ORM model
+    return users  
 
 
 @router.get("/{id}")
@@ -33,7 +33,7 @@ def get_user(id: int):
     return user[0]
 
 
-@router.delete("/menu/deleteUser/{id}")
+@router.delete("deleteUser/{id}")
 def delete_user(id: int):
     try:
         response = supabase.table("User").delete().eq("id", id)
