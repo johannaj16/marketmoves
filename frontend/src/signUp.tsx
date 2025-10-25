@@ -39,7 +39,7 @@ function SignUp() {
             <NavBar />
             <div className='registration'>
                 <h5>Join marketmoves</h5>
-                <p>Embark on your investment journey with a single dollar.</p>
+                <p>Embark on your investment journey without a single dollar.</p>
                 <br />
                 <form>
                     <div className='signUpDiv_field'>
