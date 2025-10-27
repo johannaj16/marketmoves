@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { useState, type FormEvent, type ChangeEvent } from 'react'
+import { supabase } from './supabaseClient'
+import NavBar from './navBar'
+
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'
 import googleIcon from './assets/google_logo.png'
 import appleIcon from './assets/apple_icon.svg'
-import NavBar from './navBar'
 import './signUp.css'
 
 function SignUp() {
@@ -11,6 +13,7 @@ function SignUp() {
     const [password, setPassword] = useState('')
 
     const [visibility, setVisibility] = useState(false)
+    const [signedUp, setSignedUp] = useState(false)
 
     const handleUChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setUsername(e.target.value)
@@ -28,6 +31,22 @@ function SignUp() {
         setVisibility(!visibility)
     }
 
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        try {
+            const { data, error } = await supabase.auth.signUp({ email, password })
+
+            console.log(data)
+
+            if (error) throw error
+
+            setSignedUp(true)
+        } catch (err: any) {
+            console.error(`Sign up error: ${err.message}`)
+        }
+
+    }
+
     const validFields = (
         username != '' &&
         email.includes('@') &&
@@ -41,7 +60,7 @@ function SignUp() {
                 <h5>Join marketmoves</h5>
                 <p>Embark on your investment journey without a single dollar.</p>
                 <br />
-                <form>
+                <form onSubmit={handleSubmit}>
                     <div className='signUpDiv_field'>
                         <input
                             id='username'
@@ -91,6 +110,10 @@ function SignUp() {
                     </div>
                 </form>
             </div>
+            {signedUp &&
+                <div className='confirm-email'>
+                    <p>You should have received an email from us. Please confirm your email address.</p>
+                </div>}
         </div>
     )
 }
