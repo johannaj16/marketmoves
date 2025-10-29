@@ -5,6 +5,7 @@ import { supabase } from "./supabaseClient";
 export default function AuthPage() {
   const [email, setEmail] = useState(""); 
   const [password, setPassword] = useState(""); 
+  const [user, setUser] = useState(null);
 
 
   const handleSignUp = async () => {
@@ -60,7 +61,7 @@ export default function AuthPage() {
 
     const json = await res.json()
     
-    return json
+    setUser(json)
   }
 
 
