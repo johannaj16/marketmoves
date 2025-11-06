@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { useState, type FormEvent, type ChangeEvent } from 'react'
+import { supabase } from './supabaseClient'
+import NavBar from './navBar'
+
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'
 import googleIcon from './assets/google_logo.png'
 import appleIcon from './assets/apple_icon.svg'
-import NavBar from './navBar'
 import './signUp.css'
 
 function SignUp() {
@@ -28,6 +30,32 @@ function SignUp() {
         setVisibility(!visibility)
     }
 
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+
+        const avatar_url = './assets/react.svg'
+
+        const { data, error } = await supabase.auth.signUp({
+            email: email,
+            password: password,
+            options: {
+                data: {
+                    username: username,
+                    avatar_url: avatar_url,
+                },
+            },
+        })
+
+        if (error) {
+            console.error('An error occurred: ', error)
+        } else {
+            setUsername('')
+            setEmail('')
+            setPassword('')
+        }
+
+    }
+
     const validFields = (
         username != '' &&
         email.includes('@') &&
@@ -36,12 +64,11 @@ function SignUp() {
 
     return (
         <div className='signUpDiv'>
-            <NavBar />
             <div className='registration'>
                 <h5>Join marketmoves</h5>
                 <p>Embark on your investment journey without a single dollar.</p>
                 <br />
-                <form>
+                <form onSubmit={handleSubmit}>
                     <div className='signUpDiv_field'>
                         <input
                             id='username'
