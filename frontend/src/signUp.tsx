@@ -13,7 +13,6 @@ function SignUp() {
     const [password, setPassword] = useState('')
 
     const [visibility, setVisibility] = useState(false)
-    const [signedUp, setSignedUp] = useState(false)
 
     const handleUChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setUsername(e.target.value)
@@ -33,16 +32,26 @@ function SignUp() {
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        try {
-            const { data, error } = await supabase.auth.signUp({ email, password })
 
-            console.log(data)
+        const avatar_url = './assets/react.svg'
 
-            if (error) throw error
+        const { data, error } = await supabase.auth.signUp({
+            email: email,
+            password: password,
+            options: {
+                data: {
+                    username: username,
+                    avatar_url: avatar_url,
+                },
+            },
+        })
 
-            setSignedUp(true)
-        } catch (err: any) {
-            console.error(`Sign up error: ${err.message}`)
+        if (error) {
+            console.error('An error occurred: ', error)
+        } else {
+            setUsername('')
+            setEmail('')
+            setPassword('')
         }
 
     }
@@ -55,7 +64,6 @@ function SignUp() {
 
     return (
         <div className='signUpDiv'>
-            <NavBar />
             <div className='registration'>
                 <h5>Join marketmoves</h5>
                 <p>Embark on your investment journey without a single dollar.</p>
@@ -110,10 +118,6 @@ function SignUp() {
                     </div>
                 </form>
             </div>
-            {signedUp &&
-                <div className='confirm-email'>
-                    <p>You should have received an email from us. Please confirm your email address.</p>
-                </div>}
         </div>
     )
 }
