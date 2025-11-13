@@ -1,7 +1,9 @@
 import "./portfolioDashboard.css";
 import NavBar from "./navBar";
+import { useState } from "react";
 
 function App() {
+  const [activeTab, setActiveTab] = useState("individual");
   return (
     <div className="container">
       <NavBar />
@@ -118,9 +120,86 @@ function App() {
               <h6>Up 8 positions</h6>
             </div>
           </div>
+          <div className="live-leaderboard">
+            <div className="leaderboard-header">Live Leaderboard</div>
+            <div className="ranking-button">
+              <button
+                className={`button ${
+                  activeTab === "individual" ? "active" : "inactive"
+                }`}
+                onClick={() => setActiveTab("individual")}
+              >
+                Individual Rankings
+              </button>
+              <button
+                className={`button ${
+                  activeTab === "university" ? "active" : "inactive"
+                }`}
+                onClick={() => setActiveTab("university")}
+              >
+                University Rankings
+              </button>
+            </div>
+            <div className="leaderboard-entries">
+              {/* Figure out getting / setting data later*/}
+              <LeaderBoardEntry
+                place="1"
+                userName=""
+                schoolName="VT"
+                points="100"
+              />
+              <LeaderBoardEntry
+                place="2"
+                userName=""
+                schoolName="UVA"
+                points="10"
+              />
+              <LeaderBoardEntry
+                place="3"
+                userName=""
+                schoolName="VT"
+                points="100"
+              />
+              <LeaderBoardEntry
+                place="4"
+                userName=""
+                schoolName="VT"
+                points="100"
+              />
+              <LeaderBoardEntry />
+              <LeaderBoardEntry />
+              <LeaderBoardEntry />
+              <LeaderBoardEntry />
+              <LeaderBoardEntry />
+              <LeaderBoardEntry />
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 }
 export default App;
+
+interface LeaderBoardEntryProps {
+  place?: string;
+  userName?: string;
+  schoolName?: string;
+  points?: string;
+}
+
+function LeaderBoardEntry(props: LeaderBoardEntryProps) {
+  return (
+    <div className="leaderboard-entry">
+      <div className="name-info">
+        <div className="entry-rank">{props.place}</div>
+        <div className="entry-name">{props.userName}</div>
+        <div className="school-name">{props.schoolName}</div>
+      </div>
+      <div className="entry-information">
+        <div className="entry-points">1500 pts</div>
+        <div className="entry-percent">+25% this week</div>
+      </div>
+    </div>
+  );
+}

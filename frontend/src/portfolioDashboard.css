@@ -137,14 +137,15 @@
 
 /* Stock cards grid */
 .stock-grid {
-  display: grid; /* CSS grid layout system */ 
+  display: grid; /* CSS grid layout system */
   grid-template-columns: 1fr;
   gap: 1.5rem;
   margin-right: 2rem;
   margin-bottom: 1rem;
 }
 
-@media (min-width: 768px) { /* when screen is at least 768px wide */
+@media (min-width: 768px) {
+  /* when screen is at least 768px wide */
   .stock-grid {
     grid-template-columns: repeat(2, 1fr); /* 2 columns */
   }
@@ -156,12 +157,13 @@
   border: 1px solid #e5e5e5;
   border-radius: 1.5rem;
   padding: 2rem;
-  
+
   transition: box-shadow 0.2s;
 }
 
 .stock-card:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 /* Stock info section */
@@ -293,7 +295,7 @@
   padding: 1rem;
 }
 
-.stock-topic p{
+.stock-topic p {
   margin: 2px 0 0 0;
   font-size: 0.9rem;
   color: #6b7280; /* subtle gray text */
@@ -374,4 +376,79 @@
   font-size: 0.9rem;
   font-weight: normal;
   color: #70ae71;
+}
+
+/* ---------------- Live Leaderboard Right Section ---------------- */
+
+.live-leaderboard {
+  margin-top: 2rem;
+  margin-right: 1rem;
+  margin-left: 1rem;
+  background-color: white;
+  border: 1px solid #4eadfa70;
+  border-radius: 1.5rem;
+  padding: 1rem;
+}
+
+.leaderboard-header {
+  text-align: left;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.leaderboard-entries {
+  max-height: 600px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.leaderboard-entry {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border: 1px solid #e5e5e5;
+  border-radius: 0.75rem;
+}
+
+.name-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* -- Ranking Buttons -- */
+
+.ranking-button {
+  display: flex;
+  background-color: #e5e7eb;
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+  justify-content: center;
+}
+
+.button {
+  padding: 12px 85px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  gap: 8px;
+}
+
+.button.active {
+  background-color: #ffffff;
+  color: #1f2937;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.button.inactive {
+  background-color: transparent;
+  color: #6b7280;
 }
