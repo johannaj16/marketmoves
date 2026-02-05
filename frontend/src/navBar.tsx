@@ -13,7 +13,6 @@ function NavBar() {
                 <h3>marketmoves</h3>
             </div>
 
-            {/* If user IS logged in, show the main navigation */}
             {user && (
                 <ul className='nav'>
                     <li><Link to="/portfolio">Dashboard</Link></li>
@@ -22,7 +21,6 @@ function NavBar() {
                 </ul>
             )}
 
-            {/* Profile section logic */}
             <ul className='profile'>
                 {user ? (
                     <li>Welcome, {user.email?.split('@')[0]}</li>
@@ -57,6 +55,3 @@ export default NavBar;
 // }
 
 
-
-
-// export default NavBar;
