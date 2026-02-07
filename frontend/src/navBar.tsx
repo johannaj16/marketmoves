@@ -13,11 +13,12 @@ function NavBar() {
                 <h3>marketmoves</h3>
             </div>
 
-            {user && (
+            { user && (
                 <ul className='nav'>
                     <li><Link to="/portfolio">Dashboard</Link></li>
                     <li><Link to="/leaderboard">Leaderboard</Link></li>
                     <li><Link to="/portfolio">Portfolio</Link></li>
+                    <li><Link to="/trade-page">Trade</Link></li>
                 </ul>
             )}
 
