@@ -10,6 +10,8 @@ import AuthPage from "./auth";
 import Leaderboard from "./leaderboard";
 import Portfolio from "./portfolioDashboard";
 import SignUp from "./signUp";
+import Trade from "./trade";
+
 
 
 function App() {
@@ -20,6 +22,7 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
         <Route path="/portfolio" element={<Portfolio />} />
+        <Route path="/trade" element={<Trade />} />
       </Routes>
     </Router>
   );
