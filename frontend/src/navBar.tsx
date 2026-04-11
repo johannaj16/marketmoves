@@ -1,11 +1,19 @@
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import { useAuth } from "./authcontext";
 import logo from './assets/logo.png';
 import './navBar.css';
 
 function NavBar() {
-    const { user } = useAuth();
-
+    //const { user } = useAuth();
+    const user = { email: 'hokie_dev@vt.edu' }; //simulates a user already logged in. Delete line when done
+    const [isOpen, setIsOpen] = useState(false);
+    const handleDelete = () => {
+        const confirmed = window.confirm("Are you sure you want to delete your account?");
+        if (confirmed) {
+            console.log("Delete logic for Supabase Edge Function will go here.");
+        }
+    };
     return (
         <div className='header'>
             <div className='nav-left'>
@@ -24,7 +32,29 @@ function NavBar() {
 
             <ul className='profile'>
                 {user ? (
-                    <li>Welcome, {user.email?.split('@')[0]}</li>
+                    <li className="dropdown-container">
+                        <span 
+                            onClick={() => setIsOpen(!isOpen)} 
+                            className="welcome-text"
+                        >
+                            Welcome, {user.email?.split('@')[0]}
+                        </span>
+
+                        {isOpen && (
+                            <ul className="dropdown-menu">
+                                <li className="dropdown-item">
+                                    <button className="menu-btn" onClick={() => console.log("Logout")}>
+                                        Logout
+                                    </button>
+                                </li>
+                                <li className="dropdown-item">
+                                    <button className="menu-btn delete-btn" onClick={handleDelete}>
+                                        Delete Account
+                                    </button>
+                                </li>
+                            </ul>
+                        )}
+                    </li>
                 ) : (
                     <>
                         <li><Link to="/">Sign in</Link></li>

@@ -9,29 +9,19 @@ import "./auth.css";
 export default function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [visibility, setVisibility] = useState(false);
   const [user, setUser] = useState(null);
 
-  const handleEChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  };
+  const handleEChange = (e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value);
+  const handlePChange = (e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value);
+  const handleVChange = () => setVisibility(!visibility);
 
-  const handlePChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
-  };
+  const validFields = email.includes("@") && password.length >= 8;
 
-  const handleVChange = () => {
-    setVisibility(!visibility);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await handleSignIn();
   };
-
-  const validFields =
-    email.includes("@") && password.length >= 8;
-  
-    const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-      await handleSignIn();
-    };
 
   const handleSignIn = async () => {
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -40,41 +30,31 @@ export default function AuthPage() {
     });
 
     if (error || data === null) {
-      console.log('Signin error: ', error)
-      return
-    }
-    else {
-      console.log('Successful sign in:', data)
-    }
-
-    if (data.session === null)
-    {
-      console.log("Session not returned")
-      alert("idk alert the user of something")
-      return
+      console.log('Signin error: ', error);
+      return;
     }
 
     const token = data?.session?.access_token;
-
-    if (token === null)
-    {
-      console.log("missing token")
-      return
-    }
+    if (!token) return;
 
     const res = await fetch('http://127.0.0.1:8000/protected', {
-      headers: {
-        Authorization: `Bearer ${token}`,
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const json = await res.json();
+    setUser(json);
+  };
+
+  // --- NEW: GOOGLE SIGN IN LOGIC ---
+  const handleGoogleLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin,
       },
     });
 
-    const json = await res.json()
-    
-    setUser(json)
-  }
-
-
-
+    if (error) console.error("Google Auth Error:", error.message);
+  };
 
   return (
     <div className="signInDiv">
@@ -82,6 +62,7 @@ export default function AuthPage() {
       <div className="signingIn">
         <h5>Login marketmoves</h5>
         <br />
+        
         <form onSubmit={handleSubmit}>
           <div className="signInDiv_field">
             <input
@@ -92,9 +73,6 @@ export default function AuthPage() {
               placeholder="Email"
               required
             />
-            {email != "" && !email.includes("@") && (
-              <p>Valid email is required</p>
-            )}
           </div>
           <div className="signInDiv_field">
             <input
@@ -108,30 +86,30 @@ export default function AuthPage() {
             <span className="visibility_toggle" onClick={handleVChange}>
               {visibility ? <AiOutlineEye /> : <AiOutlineEyeInvisible />}
             </span>
-            {password != "" && password.length < 8 && (
-              <p>Password must be at least 8 characters</p>
-            )}
           </div>
           <button type="submit" disabled={!validFields}>
             Continue
           </button>
-          <p>Or continue with</p>
-          <div className="continueWith">
-            <button>
-              <div>
-                <img src={googleIcon} />
-                <p>Continue with Google</p>
-              </div>
-            </button>
-            <button>
-              <div>
-                <img src={appleIcon} />
-                <p>Continue with Apple</p>
-              </div>
-            </button>
-          </div>
         </form>
+
+        <p>Or continue with</p>
+        
+        <div className="continueWith">
+          <button type="button" onClick={handleGoogleLogin}>
+            <div>
+              <img src={googleIcon} alt="Google" />
+              <p>Continue with Google</p>
+            </div>
+          </button>
+          
+          <button type="button">
+            <div>
+              <img src={appleIcon} alt="Apple" />
+              <p>Continue with Apple</p>
+            </div>
+          </button>
+        </div>
       </div>
     </div>
-  )
+  );
 }
