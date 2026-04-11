@@ -40,7 +40,6 @@ function SignUp() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await handleSignUp();
-    
   };
 
   const handleSignUp = async () => {
@@ -51,6 +50,7 @@ function SignUp() {
       password,
       options: {
         data: { username },
+        emailRedirectTo: `${window.location.origin}/`,
       },
     });
     if (error || data === null) {

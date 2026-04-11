@@ -32,11 +32,16 @@ export default function AuthPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await handleSignIn();
-    navigate("/portfolio");
+    try {
+      await handleSignIn();
+      navigate("/portfolio");
+    } catch (error) {
+      console.error("Error during sign in:", error);
+    }
   };
 
   const handleSignIn = async () => {
+    console.log("Attempting sign in with email: ", email);
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -44,7 +49,10 @@ export default function AuthPage() {
 
     if (error || data === null) {
       console.log("Signin error: ", error);
-      return;
+      if (error?.message === "Email not confirmed") {
+        alert("Please confirm your email before signing in.");
+      }
+      throw error;
     } else {
       console.log("Successful sign in:", data);
     }
@@ -59,10 +67,10 @@ export default function AuthPage() {
 
     if (token === null) {
       console.log("missing token");
-      return;
+      throw new Error("Missing access token");
     }
 
-    // Need to set up data access of user from frontend to backend
+    //Need to set up data access of user from frontend to backend
     // const res = await fetch("http://127.0.0.1:8000/protected", {
     //   headers: {
     //     Authorization: `Bearer ${token}`,
