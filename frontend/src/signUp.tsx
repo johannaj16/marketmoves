@@ -50,7 +50,7 @@ function SignUp() {
       password,
       options: {
         data: { username },
-        emailRedirectTo: "/authcontext.tsx",
+        emailRedirectTo: `${window.location.origin}/`,
       },
     });
     if (error || data === null) {
