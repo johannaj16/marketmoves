@@ -4,6 +4,9 @@ import { useState, useEffect, useRef } from 'react'
 import { FiSearch } from 'react-icons/fi'
 import bellIcon from './assets/bell.svg'
 import appleIcon from './assets/apple_icon.svg'
+import { apiUrl } from './lib/apiUrl'
+import { userFacingFetchError } from './lib/mostActiveStocks'
+import { useMostActiveStocksQuery } from './lib/useMostActiveStocksQuery'
 
 interface TickerData {
     symbol: string
@@ -19,61 +22,55 @@ interface TickerData {
 
 function Trade() {
     const [quantity, setQuantity] = useState(1)
-    const [selectedStock, setSelectedStock] = useState('AAPL')
-    const [price, setPrice] = useState(178.45)
+    const [selectedStock, setSelectedStock] = useState('')
+    const [price, setPrice] = useState(0)
+    const {
+        data: trendingStocks = [],
+        isPending: trendingLoading,
+        isError: trendingIsError,
+        error: trendingQueryError,
+    } = useMostActiveStocksQuery(10)
+    const trendingError = trendingIsError
+        ? userFacingFetchError(trendingQueryError)
+        : null
     const [action, setAction] = useState<'buy' | 'sell'>('buy')
     const [timeframe, setTimeframe] = useState('1M')
     const [detailView, setDetailView] = useState<'summary' | 'details'>('details')
     const [tickerData, setTickerData] = useState<TickerData | null>(null)
     const intervalRef = useRef<number | null>(null)
 
-    const API_BASE_URL = 'http://127.0.0.1:8000'
-
-    // Fetch APPL Data from ticker endpoint
-    const fetchAAPLData = async () => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/market/ticker/AAPL`)
-            if (!response.ok) {
-                throw new Error('Failed to fetch ticker data')
-            }
-            const data: TickerData = await response.json()
-            setTickerData(data)
-            setPrice(data.price)
-        } catch (error) {
-            console.error('Error fetching AAPL data:', error)
-        }
-    }
-
-    // polls data every 5 seconds
+    // Default selection once list exists (cache hit: data may be ready on first paint).
     useEffect(() => {
-        fetchAAPLData()
-        
-        // updates every 5 seconds
-        intervalRef.current = window.setInterval(() => {
-            fetchAAPLData()
-        }, 5000)
-        
-        // Cleanup 
-        return () => {
-            if (intervalRef.current) {
-                clearInterval(intervalRef.current)
+        if (trendingStocks.length === 0 || selectedStock) return
+        setSelectedStock(trendingStocks[0].symbol)
+        setPrice(trendingStocks[0].price)
+    }, [trendingStocks, selectedStock])
+
+    useEffect(() => {
+        if (!selectedStock) return
+
+        const fetchTicker = async () => {
+            try {
+                const response = await fetch(apiUrl(`/market/ticker/${selectedStock}`))
+                if (!response.ok) throw new Error('Failed to fetch ticker data')
+                const data: TickerData = await response.json()
+                setTickerData(data)
+                setPrice(data.price)
+            } catch (error) {
+                console.error('Error fetching ticker data:', error)
             }
         }
-    }, [])
 
-    const trendingStocks = [
-        { 
-            symbol: 'AAPL', 
-            name: 'Apple Inc.', 
-            price: tickerData?.price || 0, 
-            change: tickerData ? `${tickerData.changePct >= 0 ? '+' : ''}${tickerData.changePct.toFixed(2)}%` : 'Loading...' 
-        },
-        { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 141.20, change: '+1.85%' },
-        { symbol: 'MSFT', name: 'Microsoft Corp.', price: 378.91, change: '-0.45%' },
-        { symbol: 'TSLA', name: 'Tesla Inc.', price: 242.84, change: '+3.21%' },
-        { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 894.22, change: '+0.62%' },
-        { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 171.33, change: '+0.31%' },
-    ]
+        fetchTicker()
+        if (intervalRef.current) clearInterval(intervalRef.current)
+        intervalRef.current = window.setInterval(fetchTicker, 5000)
+        return () => {
+            if (intervalRef.current) clearInterval(intervalRef.current)
+        }
+    }, [selectedStock])
+
+    const selectedLabel =
+        trendingStocks.find((s) => s.symbol === selectedStock)?.name ?? ''
 
     return (
         <div className="trade-page">
@@ -94,8 +91,16 @@ function Trade() {
                     <aside className="stocks-list">
                         <h3>Trending Stocks</h3>
 
+                        {trendingLoading ? (
+                            <p className="trade-trending-status">Loading trending stocks…</p>
+                        ) : trendingError ? (
+                            <p className="trade-trending-status trade-trending-error">{trendingError}</p>
+                        ) : (
                         <div className="stocks-scroll">
-                            {trendingStocks.map((s) => (
+                            {trendingStocks.length === 0 ? (
+                                <p className="trade-trending-status">No trending data available.</p>
+                            ) : (
+                            trendingStocks.map((s) => (
                                 <div
                                     key={s.symbol}
                                     className={`stock-card ${selectedStock === s.symbol ? 'active' : ''}`}
@@ -117,8 +122,10 @@ function Trade() {
                                         </small>
                                     </div>
                                 </div>
-                            ))}
+                            ))
+                            )}
                         </div>
+                        )}
 
                         <div className="trade-form">
                             <h4>{selectedStock}</h4>
@@ -164,8 +171,8 @@ function Trade() {
                             <div className="stock-symbol">
                                 <img src={appleIcon} alt="Apple Inc." className="company-icon" />
                                 <div>
-                                    <strong>{selectedStock}</strong>
-                                    <p>Apple Inc.</p>
+                                    <strong>{selectedStock || '—'}</strong>
+                                    <p>{selectedLabel || '\u00a0'}</p>
                                 </div>
                             </div>
 

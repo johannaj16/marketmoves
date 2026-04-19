@@ -41,6 +41,15 @@ body {
 }
 .stocks-list h3{ margin:14px 18px 8px; font-size:.92rem; color:#111; }
 
+.trade-trending-status {
+  margin: 0 18px 12px;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+.trade-trending-error {
+  color: #dc2626;
+}
+
 /* Scroll only the list (not the form) */
 .stocks-scroll{
   flex:1; min-height:0; overflow-y:auto; padding:0 18px 12px;
@@ -250,4 +259,8 @@ html, body {
   padding: 70px 20px 0;
   box-sizing: border-box;
   overflow: hidden;
+}
+
+.trade-page .shell {
+  overflow: visible;
 }

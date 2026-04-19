@@ -1,9 +1,21 @@
 import "./portfolioDashboard.css";
 import NavBar from "./navBar";
+import { PortfolioStockCard } from "./components/PortfolioStockCard";
 import { useState } from "react";
+import { userFacingFetchError } from "./lib/mostActiveStocks";
+import { useMostActiveStocksQuery } from "./lib/useMostActiveStocksQuery";
 
 function App() {
+  // Leaderboard tabs (individual vs university) — local UI only for now.
   const [activeTab, setActiveTab] = useState("individual");
+  const {
+    data: mostActive = [],
+    isPending: mostActiveLoading,
+    isError,
+    error,
+  } = useMostActiveStocksQuery(10);
+  const mostActiveError = isError ? userFacingFetchError(error) : null;
+
   return (
     <div className="container">
       <NavBar />
@@ -14,6 +26,7 @@ function App() {
           <div className="portfolio-value">Portfolio Value</div>
           <div className="total-money">$12,345.67</div>
 
+          {/* Benchmark summary row (static placeholder until real market data is wired). */}
           <div className="row">
             <div className="SP-container">
               <div className="info">
@@ -39,7 +52,7 @@ function App() {
             </button>
           </div>
 
-          {/*Stock cards*/}
+          {/* Wishlist preview — hardcoded cards; not tied to mostActive fetch. */}
           <div className="stock-grid">
             <div className="stock-card">
               <div className="stock-info">
@@ -62,47 +75,32 @@ function App() {
             </div>
           </div>
 
-          {/*Stocks*/}
           <div className="total-money">Stocks</div>
-          {/*change the classname for this? ^^*/}
-          <div className="stock-long">
-            {/*Do the css for this section*/}
-            <div className="stock-topic">
-              {/* I don't have a class def for stock-topic, yet no other classname works? */}
-              <h2>NFLX</h2>
-              <p>Netflix, Inc</p>
-            </div>
-            <div className="stock-topic">
-              <h2>$88.91</h2>
-              <p>+ 1.29%</p>
-            </div>
-          </div>
-
-          <div className="stock-long">
-            {/*Do the css for this section*/}
-            <div className="stock-topic">
-              {/* I don't have a class def for stock-topic, yet no other classname works? */}
-              <h2>AAPL</h2>
-              <p>Aaple, Inc</p>
-            </div>
-            <div className="stock-topic">
-              <h2>$188.91</h2>
-              <p>+ 2.29%</p>
-            </div>
-          </div>
-
-          <div className="stock-long">
-            {/*Do the css for this section*/}
-            <div className="stock-topic">
-              {/* I don't have a class def for stock-topic, yet no other classname works? */}
-              <h2>FB</h2>
-              <p>Facebook, Inc</p>
-            </div>
-            <div className="stock-topic">
-              <h2>$288.91</h2>
-              <p>+ 5.29%</p>
-            </div>
-          </div>
+          <p className="portfolio-stocks-subtitle">Top 10 most active</p>
+          {/* loading → error → empty → list (mutually exclusive states). */}
+          {mostActiveLoading ? (
+            <p className="portfolio-most-active-status">
+              Loading most active stocks…
+            </p>
+          ) : mostActiveError ? (
+            <p className="portfolio-most-active-status portfolio-most-active-error">
+              {mostActiveError}
+            </p>
+          ) : mostActive.length === 0 ? (
+            <p className="portfolio-most-active-status">
+              No most active data available.
+            </p>
+          ) : (
+            mostActive.map((r) => (
+              <PortfolioStockCard
+                key={r.symbol}
+                symbol={r.symbol}
+                name={r.name}
+                price={r.price}
+                changeLabel={r.change}
+              />
+            ))
+          )}
         </div>
         <div className="rightSide">
           <div className="personal-stats">
