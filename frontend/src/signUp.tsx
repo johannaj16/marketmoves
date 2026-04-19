@@ -4,6 +4,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import googleIcon from "./assets/google_logo.png";
 import appleIcon from "./assets/apple_icon.svg";
 import NavBar from "./navBar";
+import { apiUrl } from "./lib/apiUrl";
 import "./signUp.css";
 
 function SignUp() {
@@ -73,7 +74,7 @@ function SignUp() {
       return;
     }
 
-    const res = await fetch("http://127.0.0.1:8000/signup", {
+    const res = await fetch(apiUrl("/signup"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

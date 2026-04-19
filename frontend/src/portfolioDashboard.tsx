@@ -1,75 +1,20 @@
 import "./portfolioDashboard.css";
 import NavBar from "./navBar";
 import { PortfolioStockCard } from "./components/PortfolioStockCard";
-import { useEffect, useState } from "react";
-
-/** Dev: same-origin /api → Vite proxies to :8000. Prod: set VITE_API_BASE_URL. */
-function portfolioApiUrl(path: string): string {
-  const p = path.startsWith("/") ? path : `/${path}`;
-  const fromEnv = import.meta.env.VITE_API_BASE_URL?.trim().replace(/\/$/, "");
-  if (fromEnv) return `${fromEnv}${p}`;
-  if (import.meta.env.DEV) return `/api${p}`;
-  return `http://127.0.0.1:8000${p}`;
-}
-
-type MostActiveRow = {
-  symbol: string;
-  name: string;
-  price: number;
-  change: string;
-};
+import { useState } from "react";
+import { userFacingFetchError } from "./lib/mostActiveStocks";
+import { useMostActiveStocksQuery } from "./lib/useMostActiveStocksQuery";
 
 function App() {
+  // Leaderboard tabs (individual vs university) — local UI only for now.
   const [activeTab, setActiveTab] = useState("individual");
-  const [mostActive, setMostActive] = useState<MostActiveRow[]>([]);
-  const [mostActiveLoading, setMostActiveLoading] = useState(true);
-  const [mostActiveError, setMostActiveError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      setMostActiveLoading(true);
-      setMostActiveError(null);
-      try {
-        const res = await fetch(
-          portfolioApiUrl("/market/most-active-stocks?n=10")
-        );
-        if (!res.ok) {
-          throw new Error((await res.text()) || res.statusText);
-        }
-        const data: unknown = await res.json();
-        if (!Array.isArray(data)) throw new Error("Unexpected response");
-        const rows: MostActiveRow[] = data.map((item) => {
-          const row = item as Record<string, unknown>;
-          return {
-            symbol: String(row.symbol ?? ""),
-            name: String(row.name ?? row.symbol ?? ""),
-            price: Number(row.price ?? 0),
-            change: String(row.change ?? "—"),
-          };
-        });
-        if (!cancelled) setMostActive(rows.filter((r) => r.symbol));
-      } catch (e) {
-        console.error("Most active stocks:", e);
-        if (!cancelled) {
-          setMostActive([]);
-          setMostActiveError(
-            e instanceof TypeError && e.message === "Failed to fetch"
-              ? "Could not reach the API. Is the backend running?"
-              : e instanceof Error
-                ? e.message
-                : "Could not load stocks"
-          );
-        }
-      } finally {
-        if (!cancelled) setMostActiveLoading(false);
-      }
-    }
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const {
+    data: mostActive = [],
+    isPending: mostActiveLoading,
+    isError,
+    error,
+  } = useMostActiveStocksQuery(10);
+  const mostActiveError = isError ? userFacingFetchError(error) : null;
 
   return (
     <div className="container">
@@ -81,6 +26,7 @@ function App() {
           <div className="portfolio-value">Portfolio Value</div>
           <div className="total-money">$12,345.67</div>
 
+          {/* Benchmark summary row (static placeholder until real market data is wired). */}
           <div className="row">
             <div className="SP-container">
               <div className="info">
@@ -106,7 +52,7 @@ function App() {
             </button>
           </div>
 
-          {/*Stock cards*/}
+          {/* Wishlist preview — hardcoded cards; not tied to mostActive fetch. */}
           <div className="stock-grid">
             <div className="stock-card">
               <div className="stock-info">
@@ -131,6 +77,7 @@ function App() {
 
           <div className="total-money">Stocks</div>
           <p className="portfolio-stocks-subtitle">Top 10 most active</p>
+          {/* loading → error → empty → list (mutually exclusive states). */}
           {mostActiveLoading ? (
             <p className="portfolio-most-active-status">
               Loading most active stocks…
