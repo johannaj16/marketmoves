@@ -12,22 +12,23 @@ function NavBar() {
         <img src={logo} alt="logo" />
         <h3>marketmoves</h3>
       </div>
-      {/* {user && ( */}
-      <ul className="nav">
-        <li>
-          <Link to="/portfolio">Dashboard</Link>
-        </li>
-        <li>
-          <Link to="/leaderboard">Leaderboard</Link>
-        </li>
-        <li>
-          <Link to="/portfolio">Portfolio</Link>
-        </li>
-        <li>
-          <Link to="/trade-page">Trade</Link>
-        </li>
-      </ul>
-      {/* )} */}
+      {/* jazib - change user on line 16 to true if you want to see GUI signed out with all the navigation tabs.. */}
+      {user && (  
+        <ul className="nav">
+          <li>
+            <Link to="/portfolio">Dashboard</Link>
+          </li>
+          <li>
+            <Link to="/leaderboard">Leaderboard</Link>
+          </li>
+          <li>
+            <Link to="/portfolio">Portfolio</Link>
+          </li>
+          <li>
+            <Link to="/trade-page">Trade</Link>
+          </li>
+        </ul>
+      )}
 
       <ul className="profile">
         {/* AIDEN - here is the sign out code */}
