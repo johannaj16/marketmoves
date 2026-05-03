@@ -44,24 +44,22 @@
 }
 
 .nav {
-  flex-grow: 1;
-  justify-content: center;
-  gap: 1.5rem;
+  flex: 0 1 34rem;
+  justify-content: space-between;
+  gap: clamp(2rem, 4vw, 4rem);
+  margin: 0 2rem;
 }
 
 .nav-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  flex: 1 1 0;
+  gap: 10px;
 }
 
 .nav-left img {
-    height: 40px;
-    width: auto;
-}
-
-.nav-left h3 {
-    margin: 0;
+  height: 40px;
+  width: auto;
 }
 
 .nav-left h3 {
@@ -69,6 +67,8 @@
 }
 
 .profile {
+  flex: 1 1 0;
+  justify-content: flex-end;
   gap: 2rem;
 }
 
@@ -84,6 +84,7 @@
   align-content: center;
   text-align: center;
   padding: 0 0.5rem;
+  white-space: nowrap;
   border-radius: 5px;
   transition: background-color 0.3s ease-in-out;
 }

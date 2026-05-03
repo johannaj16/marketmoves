@@ -69,13 +69,16 @@ span:hover {
 
 
 .nav {
-  flex-grow: 1;
-  justify-content: center;
-  gap: 1.5rem;
+  flex: 0 1 34rem;
+  justify-content: space-between;
+  gap: clamp(2rem, 4vw, 4rem);
+  margin: 0 2rem;
 }
 
 
 .profile {
+  flex: 1 1 0;
+  justify-content: flex-end;
   gap: 2rem;
 }
 
@@ -89,7 +92,8 @@ span:hover {
   height: 1.5rem;
   align-content: center;
   text-align: center;
-  width: 75px;
+  padding: 0 0.5rem;
+  white-space: nowrap;
   border-radius: 5px;
   transition: background-color 0.3s ease-in-out;
 }

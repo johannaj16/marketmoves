@@ -1,45 +1,44 @@
 import "./leaderboard.css";
 
 import { useState, useEffect } from "react";
-import TestSupabase from "./TestSupabase";
 import NavBar from "./navBar";
 import "./App.css";
 
+type LeaderboardEntry = {
+  name: string;
+  university: string;
+  number_of_trades: number;
+  weekly_return: number;
+  monthly_return: number;
+  yearly_return: number;
+  alltime_return: number;
+};
+
+enum Interval {
+  WEEKLY,
+  MONTHLY,
+  YEARLY,
+  ALLTIME,
+}
+
+const currentUser: LeaderboardEntry = {
+  name: "You",
+  university: "Virginia Tech",
+  number_of_trades: 15,
+  weekly_return: 2,
+  monthly_return: 4,
+  yearly_return: 8,
+  alltime_return: 30,
+};
+
 function App() {
-  type LeaderboardEntry = {
-    name: string;
-    university: string;
-    number_of_trades: number;
-    weekly_return: number;
-    monthly_return: number;
-    yearly_return: number;
-    alltime_return: number;
-  };
-
-  enum Interval {
-    WEEKLY,
-    MONTHLY,
-    YEARLY,
-    ALLTIME
-  }
-
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [interval, setInterval] = useState<Interval>(Interval.WEEKLY);
-
-  const user: LeaderboardEntry = {
-    name: "You",
-    university: "Virginia Tech",
-    number_of_trades: 15,
-    weekly_return: 2,
-    monthly_return: 4,
-    yearly_return: 8,
-    alltime_return: 30
-  };
 
   useEffect(() => {
     fetch("/leaderboard.json")
       .then((res) => res.json())
-      .then((json) => setEntries([...json.leaderboard, user]))
+      .then((json) => setEntries([...json.leaderboard, currentUser]))
       .catch((err) => console.error("Error loading JSON:", err));
   }, []);
 
@@ -64,7 +63,10 @@ function App() {
     setInterval(interval);
   };
 
-  function UserComponent(props: any) {
+  function UserComponent(props: {
+    return_val: number | undefined;
+    number_of_trades: number;
+  }) {
     return (
       <div className="box box-1">
         <div className="position-header">Your Current Position</div>
@@ -86,7 +88,7 @@ function App() {
     )
   }
 
-  function IntervalComponent(props: any) {
+  function IntervalComponent() {
     return (
       <div className="tabs">
         <button className="tab" onClick={() => handleClick(Interval.WEEKLY)}>Week</button>
@@ -97,7 +99,12 @@ function App() {
     )
   }
 
-  function LeaderboardEntryComponent(props: any) {
+  function LeaderboardEntryComponent(props: {
+    rank: number;
+    name: string;
+    number_of_trades: number;
+    return_value: number | undefined;
+  }) {
     return (
       <div className="trader-row">
         <div className="trader-left">
@@ -123,7 +130,7 @@ function App() {
       <div className="wrapper">
         <h3> Leaderboard </h3>
         <div className="main-content">
-          <UserComponent return_val={getReturn(user)} number_of_trades={user.number_of_trades} />
+          <UserComponent return_val={getReturn(currentUser)} number_of_trades={currentUser.number_of_trades} />
           <div className="leaderboard-section">
             <div className="leaderboard-panel">
               <div className="mini-header">Top Traders</div>
